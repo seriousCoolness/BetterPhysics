@@ -1,0 +1,11 @@
+﻿  Physics.cpp
+C:\Users\wyatt\source\repos\BetterPhysics\BetterPhysics\Physics.cpp(122,68): warning C4244: 'argument': conversion from 'Float' to 'int', possible loss of data
+C:\Users\wyatt\source\repos\BetterPhysics\BetterPhysics\Physics.cpp(124,68): warning C4244: 'argument': conversion from 'Float' to 'int', possible loss of data
+C:\Users\wyatt\source\repos\BetterPhysics\BetterPhysics\Physics.cpp(126,68): warning C4244: 'argument': conversion from 'Float' to 'int', possible loss of data
+     Creating library C:\Users\wyatt\source\repos\BetterPhysics\Release\BetterPhysics.lib and object C:\Users\wyatt\source\repos\BetterPhysics\Release\BetterPhysics.exp
+  Generating code
+  2 of 15 functions (13.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  BetterPhysics.vcxproj -> C:\Users\wyatt\source\repos\BetterPhysics\Release\BetterPhysics.dll
