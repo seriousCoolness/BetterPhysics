@@ -10,16 +10,17 @@ extern "C"
 	float RollingSlopeInfluenceMax[8] = { 0.16f };
 	float RollingSlopeInfluenceMin[8] = { 0.04f };
 	float RunningSlopeInfluenceMax[8] = { 0.12f };
-	float RollingSlopeInfluenceMin[8] = { 0.04f };
+	float RunningSlopeInfluenceMin[8] = { 0.04f };
 	float RollingDecel[8] = { 0.08f };
-	float grav_offset_divisor[8] = { 32.0f };
+	float GravOffsetDivisor[8] = { 32.0f };
 
 	__declspec(dllexport) void __cdecl Init(const char* path, const HelperFunctions& helperFunctions)
 	{
 		// Executed at startup, contains helperFunctions and the path to your mod (useful for getting the config file.)
 		// This is where we override functions, replace static data, etc.
-		const IniFile* config = new IniFile(std::string(path) + "\\config.ini");
-		IsChaoGardenBanned = config->getBool("Stage", "IsChaoGardenBanned", false);
+		
+		//const IniFile* config = new IniFile(std::string(path) + "\\config.ini");
+		//IsChaoGardenBanned = config->getBool("Stage", "IsChaoGardenBanned", false);
 		
 		
 		PhysicsData* p = &PhysicsArray[Characters_Sonic];
@@ -124,19 +125,19 @@ extern "C"
 
 				DisplayDebugString(NJM_LOCATION(2, 18), "Grav Offset: ");
 				char array4[16];
-				sprintf_s(array4, "%f", (data2->VelocityDirection.y / grav_offset_divisor));
+				sprintf_s(array4, "%f", (data2->VelocityDirection.y / GravOffsetDivisor[0]));
 				DisplayDebugString(NJM_LOCATION(19, 18), array4);
 
 				if (Controllers[0].HeldButtons & Buttons_Left) {
-					grav_offset_divisor += 0.001f;
+					GravOffsetDivisor[0] += 0.001f;
 				}
 				if (Controllers[0].HeldButtons & Buttons_Right) {
-					grav_offset_divisor -= 0.001f;
+					GravOffsetDivisor[0] -= 0.001f;
 				}
 				
 				DisplayDebugString(NJM_LOCATION(2, 19), "Grav Offset: ");
 				char array5[16];
-				sprintf_s(array5, "%f", grav_offset_divisor);
+				sprintf_s(array5, "%f", GravOffsetDivisor[0]);
 				DisplayDebugString(NJM_LOCATION(19, 19), array5);
 			}
 		}
