@@ -7,6 +7,7 @@ extern "C"
 {
 	bool ShowDebugInfo = false;
 	bool ChangeRunCap = false;
+	bool SA2JumpDash = true;
 	bool ApplyPhysicsFor[8] = { 1 };
 	float RollingSlopeInfluenceMax[8] = { 0.32f };
 	float RollingSlopeInfluenceMin[8] = { 0.04f };
@@ -18,6 +19,7 @@ extern "C"
 	float RollingSlopeOffset[8] = { 0.12f };
 	float JumpHeavyness = 0.01f;
 	float AirDeceleration = -0.019f;
+	float AirControl = -0.028f;
 
 	float InitialJumpSpeed[8] = { 1.66f };
 
@@ -29,8 +31,10 @@ extern "C"
 		const IniFile* config = new IniFile(std::string(path) + "\\config.ini");
 		ShowDebugInfo = config->getBool("General", "Show Debug Info", false);
 		ChangeRunCap = config->getBool("General", "Increase Speed Cap", false);
+		SA2JumpDash = config->getBool("General", "SA2JumpDash", true);
 		JumpHeavyness = config->getFloat("General", "JumpHeavyness", 0.02f);
 		AirDeceleration = config->getFloat("General", "AirDeceleration", -0.019f);
+		AirControl = config->getFloat("General", "AirControl", -0.028f);
 
 		ApplyPhysicsFor[0] = config->getBool("Physics", "Sonic", true);
 		ApplyPhysicsFor[2] = config->getBool("Physics", "Tails", true);
@@ -49,7 +53,7 @@ extern "C"
 		RunningSlopeOffset[0] = config->getFloat("Advanced", "Sonic Run Slope Influence Offset", 0.10f);
 		SlopeOffsetDivisor[0] = config->getFloat("Advanced", "Sonic Slope Influence Offset Divisor", 32.00f);
 		
-		RollingDecel[2] = config->getFloat("Advanced", "Tails Rolling Deceleration", -0.008f);
+		RollingDecel[2] = config->getFloat("Advanced", "Tails Rolling Deceleration", -0.004f);
 		RollingSlopeInfluenceMax[2] = config->getFloat("Advanced", "Tails Max Roll Slope Influence", 0.16f);
 		RollingSlopeInfluenceMin[2] = config->getFloat("Advanced", "Tails Min Roll Slope Influence", 0.04f);
 		RollingSlopeOffset[2] = config->getFloat("Advanced", "Tails Roll Slope Influence Offset", 0.14f);
@@ -110,7 +114,7 @@ extern "C"
 			if (ChangeRunCap) {
 				PhysicsArray[Characters_Tails].HSpeedCap = 24.0f;
 				PhysicsArray[Characters_Tails].VSpeedCap = 24.0f;
-				PhysicsArray[Characters_Tails].MaxAccel = 2.5f;
+				PhysicsArray[Characters_Tails].MaxAccel = 3.0f;
 			}
 			PhysicsArray[Characters_Tails].FloorGrip = 2;
 			PhysicsArray[Characters_Tails].RollDecel = RollingDecel[2];
@@ -143,6 +147,14 @@ extern "C"
 			InitialJumpSpeed[i] = PhysicsArray[i].JumpSpeed;
 		}
 
+		if (SA2JumpDash) 
+		{
+			static float dash_force = 0.98f;
+			static float dash_timer = 15.0f;
+			WriteData((float**)0x0049233F, &dash_force);
+			WriteData((float**)0x00497BCA, &dash_timer);
+		}
+
 	}
 
 	__declspec(dllexport) void __cdecl OnFrame()
@@ -169,13 +181,17 @@ extern "C"
 
 			if (data1 != nullptr && ApplyPhysicsFor[data1->CharID])
 			{
-				
-				PhysicsArray[data1->CharID].JumpSpeed = InitialJumpSpeed[data1->CharID] + (JumpHeavyness * 20.75f);
+				if (data1->Action != 10 && data1->Action != 11 && data1->Action != 12)
+				{
+					PhysicsArray[data1->CharID].JumpSpeed = InitialJumpSpeed[data1->CharID] + (JumpHeavyness * 20.75f);
+					PhysicsArray[data1->CharID].AirDecel = AirDeceleration;
+					PhysicsArray[data1->CharID].AirBrake = AirControl;
+				}
 
 				if (ShowDebugInfo)
 				{
-					DisplayDebugString(NJM_LOCATION(20, 2), "Action: ");
-					PrintDebugNumber(NJM_LOCATION(30, 2), data1->Action, 2);
+					DisplayDebugString(NJM_LOCATION(20, 2), "Status: ");
+					PrintDebugNumber(NJM_LOCATION(30, 2), data1->Status, 2);
 					DisplayDebugString(NJM_LOCATION(20, 3), "CharID: ");
 					PrintDebugNumber(NJM_LOCATION(28, 3), data1->CharID, 2);
 				}
@@ -190,7 +206,7 @@ extern "C"
 					if (data1->Action == 4 || data1->Action == 5) {
 
 						if (data2->VelocityDirection.y > 0)
-							PhysicsArray[data1->CharID].Gravity = (RollingSlopeOffset[data1->CharID] - 0.02f) - (data2->VelocityDirection.y / (SlopeOffsetDivisor[data1->CharID] * 1.25));
+							PhysicsArray[data1->CharID].Gravity = (RollingSlopeOffset[data1->CharID] - 0.02f) - (data2->VelocityDirection.y / SlopeOffsetDivisor[data1->CharID]);
 						if (data2->VelocityDirection.y < 0)
 							PhysicsArray[data1->CharID].Gravity = RollingSlopeOffset[data1->CharID] - (data2->VelocityDirection.y / SlopeOffsetDivisor[data1->CharID]);
 
@@ -218,7 +234,12 @@ extern "C"
 
 					if (ShowDebugInfo)
 						DisplayDebugString(NJM_LOCATION(2, 2), "On_ground: false");
-					PhysicsArray[data1->CharID].Gravity = 0.08f + JumpHeavyness;
+					
+					if(data1->Action == 12)
+						PhysicsArray[data1->CharID].Gravity = 0.08f;
+					else
+						PhysicsArray[data1->CharID].Gravity = 0.08f + JumpHeavyness;
+					
 				}
 
 				if (ShowDebugInfo) {
