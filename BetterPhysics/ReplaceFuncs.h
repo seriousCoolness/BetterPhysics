@@ -2,6 +2,4 @@
 
 #include "stdafx.h"
 
-extern HelperFunctions HelperFunctionsGlobal;
-
-void ReplaceCAM(std::string src);
+void ReplaceCAM(std::string src, const HelperFunctions& helperFunctions);

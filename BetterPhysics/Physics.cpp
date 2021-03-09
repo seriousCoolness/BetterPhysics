@@ -6,7 +6,7 @@
 extern "C"
 {
 	bool ShowDebugInfo = false;
-	bool ChangeRunCap = false;
+	bool ChangeRunCap = true;
 	bool SA2JumpDash = true;
 	float JumpHeavyness = 0.01f;
 	float AirDeceleration = -0.019f;
@@ -38,7 +38,7 @@ extern "C"
 		
 		const IniFile* config = new IniFile(std::string(path) + "\\config.ini");
 		ShowDebugInfo = config->getBool("General", "Show Debug Info", false);
-		ChangeRunCap = config->getBool("General", "Increase Speed Cap", false);
+		ChangeRunCap = config->getBool("General", "Increase Speed Cap", true);
 		SA2JumpDash = config->getBool("General", "SA2JumpDash", true);
 		JumpHeavyness = config->getFloat("General", "JumpHeavyness", 0.02f);
 		AirDeceleration = config->getFloat("General", "AirDeceleration", -0.019f);
@@ -119,9 +119,7 @@ extern "C"
 		RunningSlopeOffset[7] = config->getFloat("Advanced", "Big Run Slope Influence Offset", 0.08f);
 		SlopeOffsetDivisor[7] = config->getFloat("Advanced", "Big Slope Influence Offset Divisor", 25.00f);
 
-		delete config;
-
-		Init_Levels(LevelTweaks, helperFunctions);
+		//delete config;
 
 		if (ApplyPhysicsFor[0])
 		{
@@ -180,9 +178,16 @@ extern "C"
 			WriteData((float**)0x00497BCA, &dash_timer);
 		}
 
+		Init_Levels(LevelTweaks, helperFunctions);
+
 		if (DeleteLoops) 
 		{
 			InitialLoopInstruction = *(char*)0x4BB1F0;
+		}
+
+		if (TweakCameras)
+		{
+			Init_Cameras(LevelTweaks, helperFunctions);
 		}
 
 	}

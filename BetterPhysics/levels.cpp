@@ -145,6 +145,79 @@ void Init_Levels(bool LevelTweaks[11], const HelperFunctions& helperFunctions)
 	}
 }
 
+void Init_Cameras(bool LevelTweaks[11], const HelperFunctions& helperFunctions)
+{
+
+	if (LevelTweaks[0])
+	{
+		ReplaceCAM("CAM0100E", helperFunctions);
+		ReplaceCAM("CAM0100S", helperFunctions);
+		ReplaceCAM("CAM0101S", helperFunctions);
+	}
+
+	if (LevelTweaks[1])
+	{
+
+
+	}
+
+	if (LevelTweaks[2])
+	{
+
+
+	}
+
+	if (LevelTweaks[3])
+	{
+
+		ReplaceCAM("CAM0400M", helperFunctions);
+		ReplaceCAM("CAM0400S", helperFunctions);
+
+	}
+
+	if (LevelTweaks[4])
+	{
+
+
+	}
+
+	if (LevelTweaks[5])
+	{
+
+
+	}
+
+	if (LevelTweaks[6])
+	{
+
+
+	}
+
+	if (LevelTweaks[7])
+	{
+
+
+	}
+
+	if (LevelTweaks[8])
+	{
+
+
+	}
+
+	if (LevelTweaks[9])
+	{
+
+
+	}
+	if (LevelTweaks[10])
+	{
+
+
+	}
+
+}
+
 void Handle_LandTables(std::string fileName, int levelId, int act, const HelperFunctions& helperFunctions)
 {
 	std::string fullFile = "system\\" + fileName + ".sa1lvl";

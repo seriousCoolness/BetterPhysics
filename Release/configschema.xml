@@ -23,6 +23,9 @@
 	  <Property name="DeleteLoops" type="bool" defaultvalue="True" display="Remove Loop Automation">
         <HelpText>If true, removes the splines that automatically pushes the player through loops, letting the physics engine handle them instead.</HelpText>
       </Property>
+	  <Property name="TweakCameras" type="bool" defaultvalue="True" display="Enable Camera Tweaks">
+        <HelpText>HIGHLY RECOMMENDED WHEN "REMOVE LOOP AUTOMATION" IS TRUE. Enabling this will cause levels to use tweaked cameras that lessen disorientation when running through loops.</HelpText>
+      </Property>
     </Group>
 	<Group name="Levels" display="- Levels">
 	  <Property name="Emerald Coast" type="bool" defaultvalue="True">
