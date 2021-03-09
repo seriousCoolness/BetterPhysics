@@ -8,7 +8,16 @@ extern "C"
 	bool ShowDebugInfo = false;
 	bool ChangeRunCap = false;
 	bool SA2JumpDash = true;
+	float JumpHeavyness = 0.01f;
+	float AirDeceleration = -0.019f;
+	float AirControl = -0.028f;
+	bool DeleteLoops = true;
+	bool TweakCameras = true;
+
 	bool ApplyPhysicsFor[8] = { 1 };
+	
+	bool LevelTweaks[11] = { 1 };
+
 	float RollingSlopeInfluenceMax[8] = { 0.32f };
 	float RollingSlopeInfluenceMin[8] = { 0.04f };
 	float RunningSlopeInfluenceMax[8] = { 0.16f };
@@ -17,11 +26,10 @@ extern "C"
 	float SlopeOffsetDivisor[8] = { 32.0f };
 	float RunningSlopeOffset[8] = { 0.10f };
 	float RollingSlopeOffset[8] = { 0.12f };
-	float JumpHeavyness = 0.01f;
-	float AirDeceleration = -0.019f;
-	float AirControl = -0.028f;
 
 	float InitialJumpSpeed[8] = { 1.66f };
+
+	int InitialLoopInstruction;
 
 	__declspec(dllexport) void __cdecl Init(const char* path, const HelperFunctions& helperFunctions)
 	{
@@ -35,14 +43,27 @@ extern "C"
 		JumpHeavyness = config->getFloat("General", "JumpHeavyness", 0.02f);
 		AirDeceleration = config->getFloat("General", "AirDeceleration", -0.019f);
 		AirControl = config->getFloat("General", "AirControl", -0.028f);
+		DeleteLoops = config->getBool("General", "DeleteLoops", true);
+		TweakCameras = config->getBool("General", "TweakCameras", true);
 
 		ApplyPhysicsFor[0] = config->getBool("Physics", "Sonic", true);
 		ApplyPhysicsFor[2] = config->getBool("Physics", "Tails", true);
 		ApplyPhysicsFor[3] = config->getBool("Physics", "Knuckles", true);
 		ApplyPhysicsFor[5] = config->getBool("Physics", "Amy", true);
-		ApplyPhysicsFor[7] = config->getBool("Physics", "Big", false);
-		ApplyPhysicsFor[6] = config->getBool("Physics", "Gamma", false);
+		ApplyPhysicsFor[7] = config->getBool("Physics", "Big", true);
+		ApplyPhysicsFor[6] = config->getBool("Physics", "Gamma", true);
 		
+		LevelTweaks[0] = config->getBool("Levels", "Emerald Coast", true);
+		LevelTweaks[1] = config->getBool("Levels", "Windy Valley", true);
+		LevelTweaks[2] = config->getBool("Levels", "Twinkle Park", true);
+		LevelTweaks[3] = config->getBool("Levels", "Speed Highway", true);
+		LevelTweaks[4] = config->getBool("Levels", "Red Mountain", true);
+		LevelTweaks[5] = config->getBool("Levels", "Sky Deck", true);
+		LevelTweaks[6] = config->getBool("Levels", "Lost World", true);
+		LevelTweaks[7] = config->getBool("Levels", "Ice Cap", true);
+		LevelTweaks[8] = config->getBool("Levels", "Casinopolis", true);
+		LevelTweaks[9] = config->getBool("Levels", "Final Egg", true);
+		LevelTweaks[10] = config->getBool("Levels", "Hot Shelter", true);
 		
 		RollingDecel[0] = config->getFloat("Advanced", "Sonic Rolling Deceleration", -0.008f);
 		RollingSlopeInfluenceMax[0] = config->getFloat("Advanced", "Sonic Max Roll Slope Influence", 0.32f);
@@ -97,6 +118,10 @@ extern "C"
 		RunningSlopeInfluenceMin[7] = config->getFloat("Advanced", "Big Min Run Slope Influence", 0.00f);
 		RunningSlopeOffset[7] = config->getFloat("Advanced", "Big Run Slope Influence Offset", 0.08f);
 		SlopeOffsetDivisor[7] = config->getFloat("Advanced", "Big Slope Influence Offset Divisor", 25.00f);
+
+		delete config;
+
+		Init_Levels(LevelTweaks, helperFunctions);
 
 		if (ApplyPhysicsFor[0])
 		{
@@ -155,6 +180,11 @@ extern "C"
 			WriteData((float**)0x00497BCA, &dash_timer);
 		}
 
+		if (DeleteLoops) 
+		{
+			InitialLoopInstruction = *(char*)0x4BB1F0;
+		}
+
 	}
 
 	__declspec(dllexport) void __cdecl OnFrame()
@@ -170,34 +200,41 @@ extern "C"
 	__declspec(dllexport) void __cdecl OnControl()
 	{
 		// Executed when the game processes input
-		
-		//DisplayDebugString(NJM_LOCATION(2, 2), "JumpAddSpeed: ");
-		//char array[10];
-		//sprintf_s(array, "%f", PhysicsArray[Characters_Sonic].JumpAddSpeed);
-		//DisplayDebugString(NJM_LOCATION(12, 2), array);
 
-			EntityData1* data1 = EntityData1Ptrs[0];
-			EntityData2* data2 = EntityData2Ptrs[0];
+		if (DeleteLoops) {
+			WriteData<1>((char*)0x4BB1F0, InitialLoopInstruction);
+			Delete_Splines(LevelTweaks);
+		}
+		
+		EntityData1* data1 = EntityData1Ptrs[0];
+		EntityData2* data2 = EntityData2Ptrs[0];
 
 			if (data1 != nullptr && ApplyPhysicsFor[data1->CharID])
 			{
-				if (data1->Action != 10 && data1->Action != 11 && data1->Action != 12)
+
+				bool on_ground = (data1->Action >= 1 && data1->Action <= 5);
+				bool apply_air_tweaks = !((data1->Action >= 10 && data1->Action <= 12) || (data1->CharID == Characters_Tails && data1->Action == 15));
+
+				if (ShowDebugInfo)
+				{
+					DisplayDebugString(NJM_LOCATION(20, 4), "Level:");
+					PrintDebugNumber(NJM_LOCATION(30, 4), GetLevelAndAct(), 2);
+
+					if (apply_air_tweaks)
+						DisplayDebugString(NJM_LOCATION(20, 2), "Apply_air_tweaks: true");
+					else
+						DisplayDebugString(NJM_LOCATION(20, 2), "Apply_air_tweaks: false");
+					DisplayDebugString(NJM_LOCATION(20, 3), "CharID: ");
+					PrintDebugNumber(NJM_LOCATION(28, 3), data1->CharID, 2);
+				}
+
+				if (apply_air_tweaks)
 				{
 					PhysicsArray[data1->CharID].JumpSpeed = InitialJumpSpeed[data1->CharID] + (JumpHeavyness * 20.75f);
 					PhysicsArray[data1->CharID].AirDecel = AirDeceleration;
 					PhysicsArray[data1->CharID].AirBrake = AirControl;
 				}
-
-				if (ShowDebugInfo)
-				{
-					DisplayDebugString(NJM_LOCATION(20, 2), "Status: ");
-					PrintDebugNumber(NJM_LOCATION(30, 2), data1->Status, 2);
-					DisplayDebugString(NJM_LOCATION(20, 3), "CharID: ");
-					PrintDebugNumber(NJM_LOCATION(28, 3), data1->CharID, 2);
-				}
-
-				bool on_ground = (data1->Action >= 1 && data1->Action <= 5);
-
+				
 				if (on_ground) {
 
 					if (ShowDebugInfo)
@@ -235,12 +272,13 @@ extern "C"
 					if (ShowDebugInfo)
 						DisplayDebugString(NJM_LOCATION(2, 2), "On_ground: false");
 					
-					if(data1->Action == 12)
+					if(!apply_air_tweaks)
 						PhysicsArray[data1->CharID].Gravity = 0.08f;
 					else
 						PhysicsArray[data1->CharID].Gravity = 0.08f + JumpHeavyness;
 					
 				}
+				
 
 				if (ShowDebugInfo) {
 					DisplayDebugString(NJM_LOCATION(2, 6), "Gravity: ");

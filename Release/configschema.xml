@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<ConfigSchema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
+  <Groups>
+    <Group name="General" display="- General">
+      <Property name="Show Debug Info" type="bool" defaultvalue="False" display="Show Debug Info">
+        <HelpText>Enables debug info and control of properties using the d-pad.</HelpText>
+      </Property>
+	  <Property name="Increase Speed Cap" type="bool" defaultvalue="False" display="Increase Speed Cap">
+        <HelpText>Increases the maximum speed that all characters can reach and also increases acceleration in the slower characters.</HelpText>
+      </Property>
+	  <Property name="SA2JumpDash" type="bool" defaultvalue="True" display="Enable SA2-style Jump-dash">
+        <HelpText>If true, uses the SA2 Jump-Dash, which is longer and slightly less "thok"-y.</HelpText>
+      </Property>
+	  <Property name="JumpHeavyness" type="float" defaultvalue="0.02" display="Control Weighty-ness">
+        <HelpText>Controls how floaty/weighty the mid-air controls feel. Increasing this will increase gravity, but will also increase jump force to compensate.</HelpText>
+      </Property>
+	  <Property name="AirDeceleration" type="float" defaultvalue="-0.019" display="Air drag">
+        <HelpText>Controls how quickly you slow down in mid-air when not pressing anything.</HelpText>
+      </Property>
+	  <Property name="AirControl" type="float" defaultvalue="-0.028" display="Air Control">
+        <HelpText>Controls how quickly you slow down in mid-air when inputting the opposite direction.</HelpText>
+      </Property>
+	  <Property name="DeleteLoops" type="bool" defaultvalue="True" display="Remove Loop Automation">
+        <HelpText>If true, removes the splines that automatically pushes the player through loops, letting the physics engine handle them instead.</HelpText>
+      </Property>
+    </Group>
+	<Group name="Levels" display="- Levels">
+	  <Property name="Emerald Coast" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Windy Valley" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Twinkle Park" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Speed Highway" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Red Mountain" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Sky Deck" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Lost World" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Ice Cap" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Casinopolis" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Final Egg" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	  <Property name="Hot Shelter" type="bool" defaultvalue="True">
+        <HelpText>Enables tweaks to the level, such as deleting splines or tweaking cameras.</HelpText>
+      </Property>
+	</Group>
+    <Group name="Physics" display="- Physics">
+      <Property name="Sonic" type="bool" defaultvalue="True" display="Enable Sonic Physics Tweaks">
+        <HelpText>If set to false, physics tweaks will be disabled for this character.</HelpText>
+      </Property>
+      <Property name="Tails" type="bool" defaultvalue="True" display="Enable Tails Physics Tweaks">
+        <HelpText>If set to false, physics tweaks will be disabled for this character.</HelpText>
+      </Property>
+	  <Property name="Knuckles" type="bool" defaultvalue="True" display="Enable Knuckles Physics Tweaks">
+        <HelpText>If set to false, physics tweaks will be disabled for this character.</HelpText>
+      </Property>
+	  <Property name="Amy" type="bool" defaultvalue="True" display="Enable Amy Physics Tweaks">
+        <HelpText>If set to false, physics tweaks will be disabled for this character.</HelpText>
+      </Property>
+	  <Property name="Gamma" type="bool" defaultvalue="True" display="Enable Gamma Physics Tweaks">
+        <HelpText>If set to false, physics tweaks will be disabled for this character.</HelpText>
+      </Property>
+	  <Property name="Big" type="bool" defaultvalue="True" display="Enable Big Physics Tweaks">
+        <HelpText>If set to false, physics tweaks will be disabled for this character.</HelpText>
+      </Property>
+	</Group>
+    <Group name="Advanced">
+      <Property name="Sonic Rolling Deceleration" type="float" defaultvalue="-0.008">
+        <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
+      </Property>
+	  <Property name="Sonic Max Roll Slope Influence" type="float" defaultvalue="0.32">
+        <HelpText>Maximum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Sonic Min Roll Slope Influence" type="float" defaultvalue="0.04">
+        <HelpText>Minimum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Sonic Roll Slope Influence Offset" type="float" defaultvalue="0.14">
+        <HelpText>Median slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Sonic Max Run Slope Influence" type="float" defaultvalue="0.16">
+        <HelpText>Maximum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Sonic Min Run Slope Influence" type="float" defaultvalue="0.04">
+        <HelpText>Minimum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Sonic Run Slope Influence Offset" type="float" defaultvalue="0.10">
+        <HelpText>Median slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Sonic Slope Influence Offset Divisor" type="float" defaultvalue="32.00">
+        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+      </Property>
+	  <Property name="Tails Rolling Deceleration" type="float" defaultvalue="-0.004">
+        <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
+      </Property>
+	  <Property name="Tails Max Roll Slope Influence" type="float" defaultvalue="0.16">
+        <HelpText>Maximum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Tails Min Roll Slope Influence" type="float" defaultvalue="0.04">
+        <HelpText>Minimum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Tails Roll Slope Influence Offset" type="float" defaultvalue="0.14">
+        <HelpText>Median slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Tails Max Run Slope Influence" type="float" defaultvalue="0.16">
+        <HelpText>Maximum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Tails Min Run Slope Influence" type="float" defaultvalue="0.00">
+        <HelpText>Minimum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Tails Run Slope Influence Offset" type="float" defaultvalue="0.08">
+        <HelpText>Median slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Tails Slope Influence Offset Divisor" type="float" defaultvalue="30.00">
+        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+      </Property>
+	  <Property name="Knuckles Rolling Deceleration" type="float" defaultvalue="-0.008">
+        <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
+      </Property>
+	  <Property name="Knuckles Max Roll Slope Influence" type="float" defaultvalue="0.16">
+        <HelpText>Maximum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Knuckles Min Roll Slope Influence" type="float" defaultvalue="0.04">
+        <HelpText>Minimum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Knuckles Roll Slope Influence Offset" type="float" defaultvalue="0.14">
+        <HelpText>Median slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Knuckles Max Run Slope Influence" type="float" defaultvalue="0.16">
+        <HelpText>Maximum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Knuckles Min Run Slope Influence" type="float" defaultvalue="0.04">
+        <HelpText>Minimum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Knuckles Run Slope Influence Offset" type="float" defaultvalue="0.10">
+        <HelpText>Median slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Knuckles Slope Influence Offset Divisor" type="float" defaultvalue="30.00">
+        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+      </Property>
+	  <Property name="Amy Rolling Deceleration (Unused)" type="float" defaultvalue="-0.008">
+        <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
+      </Property>
+	  <Property name="Amy Max Roll Slope Influence (Unused)" type="float" defaultvalue="0.32">
+        <HelpText>Maximum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Amy Min Roll Slope Influence (Unused)" type="float" defaultvalue="0.04">
+        <HelpText>Minimum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Amy Roll Slope Influence Offset" type="float" defaultvalue="0.16">
+        <HelpText>Median slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Amy Max Run Slope Influence" type="float" defaultvalue="0.16">
+        <HelpText>Maximum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Amy Min Run Slope Influence" type="float" defaultvalue="0.02">
+        <HelpText>Minimum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Amy Run Slope Influence Offset" type="float" defaultvalue="0.08">
+        <HelpText>Median slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Amy Slope Influence Offset Divisor" type="float" defaultvalue="25.00">
+        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+      </Property>
+	  <Property name="Gamma Rolling Deceleration (Unused)" type="float" defaultvalue="-0.008">
+        <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
+      </Property>
+	  <Property name="Gamma Max Roll Slope Influence (Unused)" type="float" defaultvalue="0.32">
+        <HelpText>Maximum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Gamma Min Roll Slope Influence (Unused)" type="float" defaultvalue="0.04">
+        <HelpText>Minimum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Gamma Roll Slope Influence Offset" type="float" defaultvalue="0.14">
+        <HelpText>Median slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Gamma Max Run Slope Influence" type="float" defaultvalue="0.08">
+        <HelpText>Maximum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Gamma Min Run Slope Influence" type="float" defaultvalue="0.00">
+        <HelpText>Minimum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Gamma Run Slope Influence Offset" type="float" defaultvalue="0.08">
+        <HelpText>Median slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Gamma Slope Influence Offset Divisor" type="float" defaultvalue="25.00">
+        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+      </Property>
+	  <Property name="Big Rolling Deceleration (Unused)" type="float" defaultvalue="-0.008">
+        <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
+      </Property>
+	  <Property name="Big Max Roll Slope Influence (Unused)" type="float" defaultvalue="0.32">
+        <HelpText>Maximum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Big Min Roll Slope Influence (Unused)" type="float" defaultvalue="0.04">
+        <HelpText>Minimum slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Big Roll Slope Influence Offset" type="float" defaultvalue="0.16">
+        <HelpText>Median slope influence while rolling.</HelpText>
+      </Property>
+	  <Property name="Big Max Run Slope Influence" type="float" defaultvalue="0.08">
+        <HelpText>Maximum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Big Min Run Slope Influence" type="float" defaultvalue="0.00">
+        <HelpText>Minimum slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Big Run Slope Influence Offset" type="float" defaultvalue="0.08">
+        <HelpText>Median slope influence while running.</HelpText>
+      </Property>
+	  <Property name="Big Slope Influence Offset Divisor" type="float" defaultvalue="25.00">
+        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+      </Property>
+    </Group>
+  </Groups>
+</ConfigSchema>

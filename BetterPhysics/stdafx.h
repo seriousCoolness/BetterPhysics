@@ -19,7 +19,9 @@
 
 #include "SADXModLoader.h"
 #include "IniFile.hpp"
+#include "LandTableInfo.h"
+#include "ReplaceFuncs.h"
 #include "Trampoline.h"
-
+#include "levels.h"
 #include <fstream>
 #include <iostream>
