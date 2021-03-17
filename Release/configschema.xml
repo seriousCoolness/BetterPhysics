@@ -5,6 +5,9 @@
       <Property name="Show Debug Info" type="bool" defaultvalue="False" display="Show Debug Info">
         <HelpText>Enables debug info and control of properties using the d-pad.</HelpText>
       </Property>
+	  <Property name="PhysicsType" type="Physics Type" defaultvalue="0" display="Slope-Physics Handling Type">
+        <HelpText>Rotation bases the physics on the player's rotation. Velocity bases the physics on the players vertical speed.</HelpText>
+      </Property>
 	  <Property name="Increase Speed Cap" type="bool" defaultvalue="False" display="Increase Speed Cap">
         <HelpText>Increases the maximum speed that all characters can reach and also increases acceleration in the slower characters.</HelpText>
       </Property>
@@ -87,146 +90,206 @@
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
       </Property>
 	  <Property name="Sonic Max Roll Slope Influence" type="float" defaultvalue="0.32">
-        <HelpText>Maximum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based) Maximum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Sonic Min Roll Slope Influence" type="float" defaultvalue="0.04">
-        <HelpText>Minimum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Sonic Roll Slope Influence Offset" type="float" defaultvalue="0.14">
-        <HelpText>Median slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Sonic Max Run Slope Influence" type="float" defaultvalue="0.16">
-        <HelpText>Maximum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Sonic Min Run Slope Influence" type="float" defaultvalue="0.04">
-        <HelpText>Minimum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Sonic Run Slope Influence Offset" type="float" defaultvalue="0.10">
-        <HelpText>Median slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while running.</HelpText>
       </Property>
 	  <Property name="Sonic Slope Influence Offset Divisor" type="float" defaultvalue="32.00">
-        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+        <HelpText>(Velocity-based)Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
       </Property>
+	  <Property name="SonicSF" display="Sonic Standing Slope Factor" type="float" defaultvalue="0.125">
+		<HelpText>(Rotation-based)The amount of slope influence while standing.</HelpText>
+	  </Property>
+	  <Property name="SonicSRU" display="Sonic Upwards Rolling Slope Factor" type="float" defaultvalue="0.078125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling upwards.</HelpText>
+	  </Property>
+	  <Property name="SonicSRD" display="Sonic Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
+	  </Property>
 	  <Property name="Tails Rolling Deceleration" type="float" defaultvalue="-0.004">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
       </Property>
 	  <Property name="Tails Max Roll Slope Influence" type="float" defaultvalue="0.16">
-        <HelpText>Maximum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Tails Min Roll Slope Influence" type="float" defaultvalue="0.04">
-        <HelpText>Minimum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Tails Roll Slope Influence Offset" type="float" defaultvalue="0.14">
-        <HelpText>Median slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Tails Max Run Slope Influence" type="float" defaultvalue="0.16">
-        <HelpText>Maximum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Tails Min Run Slope Influence" type="float" defaultvalue="0.00">
-        <HelpText>Minimum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Tails Run Slope Influence Offset" type="float" defaultvalue="0.08">
-        <HelpText>Median slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while running.</HelpText>
       </Property>
 	  <Property name="Tails Slope Influence Offset Divisor" type="float" defaultvalue="30.00">
-        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+        <HelpText>(Velocity-based)Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
       </Property>
+	  <Property name="TailsSF" display="Tails Standing Slope Factor" type="float" defaultvalue="0.125">
+		<HelpText>(Rotation-based)The amount of slope influence while standing.</HelpText>
+	  </Property>
+	  <Property name="TailsSRU" display="Tails Upwards Rolling Slope Factor" type="float" defaultvalue="0.078125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling upwards.</HelpText>
+	  </Property>
+	  <Property name="TailsSRD" display="Tails Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
+	  </Property>
 	  <Property name="Knuckles Rolling Deceleration" type="float" defaultvalue="-0.008">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
       </Property>
 	  <Property name="Knuckles Max Roll Slope Influence" type="float" defaultvalue="0.16">
-        <HelpText>Maximum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Knuckles Min Roll Slope Influence" type="float" defaultvalue="0.04">
-        <HelpText>Minimum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Knuckles Roll Slope Influence Offset" type="float" defaultvalue="0.14">
-        <HelpText>Median slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Knuckles Max Run Slope Influence" type="float" defaultvalue="0.16">
-        <HelpText>Maximum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Knuckles Min Run Slope Influence" type="float" defaultvalue="0.04">
-        <HelpText>Minimum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Knuckles Run Slope Influence Offset" type="float" defaultvalue="0.10">
-        <HelpText>Median slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while running.</HelpText>
       </Property>
 	  <Property name="Knuckles Slope Influence Offset Divisor" type="float" defaultvalue="30.00">
-        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+        <HelpText>(Velocity-based)Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
       </Property>
+	  <Property name="KnucklesSF" display="Knuckles Standing Slope Factor" type="float" defaultvalue="0.125">
+		<HelpText>(Rotation-based)The amount of slope influence while standing.</HelpText>
+	  </Property>
+	  <Property name="KnucklesSRU" display="Knuckles Upwards Rolling Slope Factor" type="float" defaultvalue="0.078125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling upwards.</HelpText>
+	  </Property>
+	  <Property name="KnucklesSRD" display="Knuckles Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
+	  </Property>
 	  <Property name="Amy Rolling Deceleration (Unused)" type="float" defaultvalue="-0.008">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
       </Property>
 	  <Property name="Amy Max Roll Slope Influence (Unused)" type="float" defaultvalue="0.32">
-        <HelpText>Maximum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Amy Min Roll Slope Influence (Unused)" type="float" defaultvalue="0.04">
-        <HelpText>Minimum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Amy Roll Slope Influence Offset" type="float" defaultvalue="0.16">
-        <HelpText>Median slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Amy Max Run Slope Influence" type="float" defaultvalue="0.16">
-        <HelpText>Maximum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Amy Min Run Slope Influence" type="float" defaultvalue="0.02">
-        <HelpText>Minimum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Amy Run Slope Influence Offset" type="float" defaultvalue="0.08">
-        <HelpText>Median slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while running.</HelpText>
       </Property>
 	  <Property name="Amy Slope Influence Offset Divisor" type="float" defaultvalue="25.00">
-        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+        <HelpText>(Velocity-based)Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
       </Property>
+	  <Property name="AmySF" display="Amy Standing Slope Factor" type="float" defaultvalue="0.125">
+		<HelpText>(Rotation-based)The amount of slope influence while standing.</HelpText>
+	  </Property>
+	  <Property name="AmySRU" display="Amy Upwards Rolling Slope Factor" type="float" defaultvalue="0.078125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling upwards.</HelpText>
+	  </Property>
+	  <Property name="AmySRD" display="Amy Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
+	  </Property>
 	  <Property name="Gamma Rolling Deceleration (Unused)" type="float" defaultvalue="-0.008">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
       </Property>
 	  <Property name="Gamma Max Roll Slope Influence (Unused)" type="float" defaultvalue="0.32">
-        <HelpText>Maximum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Gamma Min Roll Slope Influence (Unused)" type="float" defaultvalue="0.04">
-        <HelpText>Minimum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Gamma Roll Slope Influence Offset" type="float" defaultvalue="0.14">
-        <HelpText>Median slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Gamma Max Run Slope Influence" type="float" defaultvalue="0.08">
-        <HelpText>Maximum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Gamma Min Run Slope Influence" type="float" defaultvalue="0.00">
-        <HelpText>Minimum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Gamma Run Slope Influence Offset" type="float" defaultvalue="0.08">
-        <HelpText>Median slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while running.</HelpText>
       </Property>
 	  <Property name="Gamma Slope Influence Offset Divisor" type="float" defaultvalue="25.00">
-        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+        <HelpText>(Velocity-based)Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
       </Property>
+	  <Property name="GammaSF" display="Gamma Standing Slope Factor" type="float" defaultvalue="0.125">
+		<HelpText>(Rotation-based)The amount of slope influence while standing.</HelpText>
+	  </Property>
+	  <Property name="GammaSRU" display="Gamma Upwards Rolling Slope Factor" type="float" defaultvalue="0.078125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling upwards.</HelpText>
+	  </Property>
+	  <Property name="GammaSRD" display="Gamma Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
+	  </Property>
 	  <Property name="Big Rolling Deceleration (Unused)" type="float" defaultvalue="-0.008">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
       </Property>
 	  <Property name="Big Max Roll Slope Influence (Unused)" type="float" defaultvalue="0.32">
-        <HelpText>Maximum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Big Min Roll Slope Influence (Unused)" type="float" defaultvalue="0.04">
-        <HelpText>Minimum slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Big Roll Slope Influence Offset" type="float" defaultvalue="0.16">
-        <HelpText>Median slope influence while rolling.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while rolling.</HelpText>
       </Property>
 	  <Property name="Big Max Run Slope Influence" type="float" defaultvalue="0.08">
-        <HelpText>Maximum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Maximum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Big Min Run Slope Influence" type="float" defaultvalue="0.00">
-        <HelpText>Minimum slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Minimum slope influence while running.</HelpText>
       </Property>
 	  <Property name="Big Run Slope Influence Offset" type="float" defaultvalue="0.08">
-        <HelpText>Median slope influence while running.</HelpText>
+        <HelpText>(Velocity-based)Median slope influence while running.</HelpText>
       </Property>
 	  <Property name="Big Slope Influence Offset Divisor" type="float" defaultvalue="25.00">
-        <HelpText>Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
+        <HelpText>(Velocity-based)Decides how slowly the slope influence goes from the median to the max or min. Higher values are slower.</HelpText>
       </Property>
+	  <Property name="BigSF" display="Big Standing Slope Factor" type="float" defaultvalue="0.125">
+		<HelpText>(Rotation-based)The amount of slope influence while standing.</HelpText>
+	  </Property>
+	  <Property name="BigSRU" display="Big Upwards Rolling Slope Factor" type="float" defaultvalue="0.078125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling upwards.</HelpText>
+	  </Property>
+	  <Property name="BigSRD" display="Big Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
+		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
+	  </Property>
     </Group>
   </Groups>
+  <Enums>
+	<Enum name="Physics Type">
+		<EnumMember name="0" display="Rotation-based" />
+		<EnumMember name="1" display="Velocity-based" />
+	</Enum>
+  </Enums>
 </ConfigSchema>

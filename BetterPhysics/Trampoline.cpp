@@ -5,7 +5,7 @@
 #include <exception>
 #include <vector>
 #include <cstdint>
-#include <MemAccess.h>
+#include "MemAccess.h"
 
 Trampoline::Trampoline(intptr_t start, intptr_t end, void* func, bool destructRevert)
 	: target(reinterpret_cast<void*>(start))
