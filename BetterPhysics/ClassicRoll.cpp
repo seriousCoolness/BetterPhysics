@@ -3,6 +3,7 @@
 
 #include "ClassicRoll.h"
 
+//CREDIT TO SF94 FOR THIS ENTIRE FILE.
 static constexpr float speed_threshold = 0.90f;
 static int last_status[8] = {};
 

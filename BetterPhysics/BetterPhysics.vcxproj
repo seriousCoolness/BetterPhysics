@@ -151,20 +151,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ClassicJump.h" />
+    <ClInclude Include="ClassicRoll.h" />
+    <ClInclude Include="EnemyBounceThing.h" />
+    <ClInclude Include="FixGomban.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LandTableInfo.h" />
     <ClInclude Include="levels.h" />
+    <ClInclude Include="MemAccess.h" />
     <ClInclude Include="Physics.h" />
-    <ClInclude Include="ReplaceFuncs.h" />
+    <ClInclude Include="HelperFuncs.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Trampoline.h" />
+    <ClInclude Include="Turning.h" />
+    <ClInclude Include="WaterRun.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClassicJump.cpp" />
+    <ClCompile Include="ClassicRoll.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="EnemyBounceThing.cpp" />
+    <ClCompile Include="FixGomban.cpp" />
     <ClCompile Include="LandTableInfo.cpp" />
     <ClCompile Include="levels.cpp" />
     <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="ReplaceFuncs.cpp" />
+    <ClCompile Include="HelperFuncs.cpp" />
+    <ClCompile Include="Trampoline.cpp" />
+    <ClCompile Include="Turning.cpp" />
+    <ClCompile Include="WaterRun.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\source\repos\BetterPhysics\sadx-mod-loader\mod-loader-common\ModLoaderCommon\ModLoaderCommon.vcxproj">

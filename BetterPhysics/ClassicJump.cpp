@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ClassicJump.h"
 
+//CREDIT TO SF94 FOR THIS ENTIRE FILE.
 int lastButtons[8] = {};
 int lastFrame[8] = {};
 

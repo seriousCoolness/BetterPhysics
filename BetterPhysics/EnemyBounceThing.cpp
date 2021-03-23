@@ -2,6 +2,7 @@
 
 #include "EnemyBounceThing.h"
 
+//CREDIT TO SF94 FOR THIS ENTIRE FILE.
 const void* EnemyBounceThing_ptr = reinterpret_cast<void*>(0x00441280);
 
 void __cdecl EnemyBounceThing_r(Uint8 playerID, float speedX, float speedY, float speedZ)

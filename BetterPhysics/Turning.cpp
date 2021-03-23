@@ -2,17 +2,16 @@
 
 #include "Turning.h"
 
-void __cdecl GraduallyTurn_r(EntityData1* a1, EntityData2* a2, CharObj2* a3) 
+void __cdecl GraduallyTurn_r(EntityData1* data1, EntityData2* data2, CharObj2* a3)
 {
-    float v3; // ecx
-    float v4; // edx
-    float v5; // eax
-    double v6; // st7
-    int v7; // ebp
+    float vX; // ecx
+    float vY; // edx
+    float vZ; // eax
+    int v6; // ebp
+    double v7; // st7
     double v8; // st7
-    double v9; // st7
-    int v10; // eax
-    Angle v11; // [esp-Ch] [ebp-28h]
+    int v9; // eax
+    Angle v10; // [esp-Ch] [ebp-28h]
     NJS_VECTOR a2a; // [esp+4h] [ebp-18h] BYREF
     NJS_VECTOR a1a; // [esp+10h] [ebp-Ch] BYREF
 
@@ -20,47 +19,32 @@ void __cdecl GraduallyTurn_r(EntityData1* a1, EntityData2* a2, CharObj2* a3)
     {
         a2a.x = Gravity.x;
         a2a.y = Gravity.y;
-        v3 = a2->VelocityDirection.x;
         a2a.z = Gravity.z;
-        v4 = a2->VelocityDirection.y;
-        v5 = a2->VelocityDirection.z;
-        a1a.x = v3;
-        a1a.y = v4;
-        a1a.z = v5;
-        if (njScalor(&a1a) <= (double)a3->PhysicsData.Run1
-            || (njUnitVector(&a1a), v6 = njInnerProduct(&Gravity, &a1a), !((v6 < -0.86))))
-        {
-            WorldToPlayer(a1, &a2a);
-            if ((a2a.y < 0.0) && a2a.y > -0.87)
-            {
-                if ((a2a.x < 0.0))
-                {
-                    a2a.x = -a2a.x;
-                }
-                v7 = a1->Rotation.y - (atan2(a2a.z, a2a.x) * 65536.0 * -0.1591549762031479);
-                if ((a2a.z < 0.0))
-                {
-                    a2a.z = -a2a.z;
-                }
-                v8 = a2a.z;
-                if ((a1->Status & Status_Ball) != 0)
-                {
-                    v9 = v8 * 3072.0;
-                }
+        vX = data2->VelocityDirection.x;
+        vY = data2->VelocityDirection.y;
+        vZ = data2->VelocityDirection.z;
+        a1a.x = vX;
+        a1a.y = vY;
+        a1a.z = vZ;
+        
+        WorldToPlayer(data1, &a2a);
+            if (abs(data2->CharacterData->SurfaceNormal.y) <= 0.925 && data1->Action != 4) {
+                NJS_VECTOR SideDirection = { 0, 0, 1 };
+                NJS_VECTOR ForwardDirection = { 1, 0, 0 };
+                PlayerDirectionTransform(data1, &SideDirection);
+                PlayerDirectionTransform(data1, &ForwardDirection);
+                float SideAngleLimit = atan2(abs(SideDirection.y), data2->CharacterData->Speed.x) * (65536.0f / (2.0f * 3.141592f));
+                float RotationDivisor;
+                RotationDivisor = 45.0f - abs(SideDirection.y * 22.5f);
+                float SurfaceAngleY = atan2(data2->CharacterData->SurfaceNormal.z, data2->CharacterData->SurfaceNormal.x) * (65536.0f / (2.0f * 3.141592f));
+                //float AngleDifference = ((data1->Rotation.y - SurfaceAngleY) / 60.0);
+                if (PhysicsType == 1)
+                    v9 = BAMS_SubWrap(data1->Rotation.y, SurfaceAngleY, (65536.0f / RotationDivisor));
                 else
-                {
-                    v9 = v8 * 1536.0;
-                }
-                v10 = BAMS_SubWrap(a2->Forward.y, v7, v9);
-                a2->Forward.y = v10;
-                RotateTowards(a3, a1, a2, v10);
+                    v9 = BAMS_SubWrap(data1->Rotation.y, SurfaceAngleY, (SideAngleLimit * 2));
+                data2->Forward.y = v9;
+                RotateTowards(a3, data1, data2, v9);
             }
-            else
-            {
-                v11 = a1->Rotation.y;
-                a2->Forward.y = v11;
-                RotateTowards(a3, a1, a2, v11);
-            }
-        }
+        //data1->Rotation.y = (SurfaceAngleY) * (65536.0f / (2.0f * 3.141592f));
     }
 }

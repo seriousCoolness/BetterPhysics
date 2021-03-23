@@ -2,6 +2,7 @@
 #include <cmath>
 #include "WaterRun.h"
 
+//CREDIT TO SF94 FOR THIS ENTIRE FILE.
 const void* loc_4496E1 = reinterpret_cast<void*>(0x004496E1);
 
 static BOOL __stdcall WaterRun_c(EntityData1* data1, CharObj2* data2)

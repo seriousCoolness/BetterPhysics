@@ -5,7 +5,6 @@
 #include "WaterRun.h"
 #include "ClassicJump.h"
 #include "ClassicRoll.h"
-#include "Physics.h"
 #include "FixGomban.h"
 #include "Turning.h"
 // or #include "stdafx.h" for previous Visual Studio versions
@@ -120,8 +119,9 @@ extern "C"
 	float JumpHeavyness = 0.01f;
 	float AirDeceleration = -0.019f;
 	float AirControl = -0.028f;
-	bool DeleteLoops = true;
-	bool TweakCameras = true;
+	bool DeleteLoops = false;
+	bool DeleteDashPanels = true;
+	bool TweakCameras = false;
 
 	bool ApplyPhysicsFor[8] = { 1 };
 
@@ -169,8 +169,9 @@ extern "C"
 		JumpHeavyness = config->getFloat("General", "JumpHeavyness", 0.02f);
 		AirDeceleration = config->getFloat("General", "AirDeceleration", -0.019f);
 		AirControl = config->getFloat("General", "AirControl", -0.028f);
-		DeleteLoops = config->getBool("General", "DeleteLoops", true);
-		TweakCameras = config->getBool("General", "TweakCameras", true);
+		DeleteLoops = config->getBool("General", "DeleteLoops", false);
+		DeleteDashPanels = config->getBool("General", "DeleteDashPanels", true);
+		TweakCameras = config->getBool("General", "TweakCameras", false);
 
 		ApplyPhysicsFor[0] = config->getBool("Physics", "Sonic", true);
 		ApplyPhysicsFor[2] = config->getBool("Physics", "Tails", true);
@@ -369,8 +370,11 @@ extern "C"
 		// Executed every running frame of SADX
 		if (DeleteLoops) {
 			WriteData<1>((char*)0x4BB1F0, InitialLoopInstruction);
-			WriteData<1>((char*)0x007A4450, InitialPanelInstruction);
 			Delete_Splines(LevelTweaks);
+		}
+		if (DeleteDashPanels) {
+			WriteData<1>((char*)0x007A4450, InitialPanelInstruction);
+			Delete_Panels(LevelTweaks);
 		}
 
 		EntityData1* data1 = EntityData1Ptrs[0];
@@ -395,7 +399,7 @@ extern "C"
 
 			// && abs(Controllers[0].LeftStickX) < 20 && abs(Controllers[0].LeftStickY) < 20
 			if (on_ground && !PrevOnGround) {
-				if (data2->VelocityDirection.y < 0 && data2->CharacterData->SurfaceNormal.y != 1.0f) {
+				if (data2->VelocityDirection.y < 0 && data2->CharacterData->SurfaceNormal.y <= 0.925f) {
 					//GravityAngle_X = 0;
 					//GravityAngle_Z = 0;
 
@@ -405,9 +409,9 @@ extern "C"
 					DotProduct(&data2->CharacterData->SurfaceNormal, &data2->CharacterData->SurfaceNormal, &NormalSquared);
 					NJS_VECTOR Reflected_Normal = { 0,0,0 };
 					
-					if (data2->CharacterData->SurfaceNormal.x != 0.0f)
+					if (data2->CharacterData->SurfaceNormal.x != 0.0f && data2->CharacterData->SurfaceNormal.x != -0.0f)
 						Reflected_Normal.x = 2 * ((NormalVelDotProduct.x / NormalSquared.x) * data2->CharacterData->SurfaceNormal.x) - data2->VelocityDirection.x;
-					if (data2->CharacterData->SurfaceNormal.z != 0.0f)
+					if (data2->CharacterData->SurfaceNormal.z != 0.0f && data2->CharacterData->SurfaceNormal.z != -0.0f)
 						Reflected_Normal.z = 2 * ((NormalVelDotProduct.z / NormalSquared.z) * data2->CharacterData->SurfaceNormal.z) - data2->VelocityDirection.z;
 
 					
@@ -525,8 +529,7 @@ extern "C"
 				}
 			}
 			if (!on_ground) {
-				GravityAngle_X = 0;
-				GravityAngle_Z = 0;
+
 				if (ShowDebugInfo)
 					DisplayDebugString(NJM_LOCATION(2, 2), "On_ground: false");
 
@@ -546,23 +549,23 @@ extern "C"
 				DisplayDebugString(NJM_LOCATION(12, 6), array2);
 
 				NJS_VECTOR ForwardDirection = { 1, 0, 0 };
-				NJS_VECTOR SideDirection = { 0, 0, 1 };
+				NJS_VECTOR SideDirection = { 0, 0, -1 };
 				PlayerDirectionTransform(data1, &ForwardDirection);
 				PlayerDirectionTransform(data1, &SideDirection);
 
-				DisplayDebugString(NJM_LOCATION(2, 10), "Forward x: ");
+				DisplayDebugString(NJM_LOCATION(2, 10), "roll down div: ");
 				char arrayX[16];
-				sprintf_s(arrayX, "%f", ForwardDirection.x);
+				sprintf_s(arrayX, "%f", (45.0f - abs(SideDirection.y * 45) * SlopeRollDown[data1->CharID]));
 				DisplayDebugString(NJM_LOCATION(20, 10), arrayX);
 
-				DisplayDebugString(NJM_LOCATION(2, 11), "Forward y: ");
+				DisplayDebugString(NJM_LOCATION(2, 11), "roll up div: ");
 				char arrayY[16];
-				sprintf_s(arrayY, "%f", ForwardDirection.y);
+				sprintf_s(arrayY, "%f", (45.0f - abs(SideDirection.y * 45) * SlopeRollUp[data1->CharID]));
 				DisplayDebugString(NJM_LOCATION(20, 11), arrayY);
 
-				DisplayDebugString(NJM_LOCATION(2, 12), "Forward z: ");
+				DisplayDebugString(NJM_LOCATION(2, 12), "run div: ");
 				char arrayZ[16];
-				sprintf_s(arrayZ, "%f", ForwardDirection.z);
+				sprintf_s(arrayZ, "%f", (45.0f - abs(SideDirection.y * 45) * SlopeFactor[data1->CharID]));
 				DisplayDebugString(NJM_LOCATION(20, 12), arrayZ);
 
 

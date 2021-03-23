@@ -20,6 +20,7 @@
 #include "SADXModLoader.h"
 #include "IniFile.hpp"
 #include "LandTableInfo.h"
+#include "Physics.h"
 #include "HelperFuncs.h"
 #include "Trampoline.h"
 #include "levels.h"
