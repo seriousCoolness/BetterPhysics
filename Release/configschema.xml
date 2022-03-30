@@ -23,14 +23,17 @@
 	  <Property name="AirControl" type="float" defaultvalue="-0.028" display="Air Control">
         <HelpText>Controls how quickly you slow down in mid-air when inputting the opposite direction.</HelpText>
       </Property>
-	  <Property name="DeleteLoops" type="bool" defaultvalue="False" display="Remove Loop Automation">
-        <HelpText>If true, removes the splines that automatically pushes the player through loops, letting the physics engine handle them instead.</HelpText>
+	  <Property name="DeleteLoops" type="LoopType" defaultvalue="0" display="Loop Automation Type">
+        <HelpText>No splines will remove all automation, while boost-less splines will make the loop still control your direction, but won't give you any speed.</HelpText>
       </Property>
 	  <Property name="DeleteDashPanels" type="bool" defaultvalue="True" display="Remove Dash Panels">
-        <HelpText>HIGHLY RECOMMENDED WHEN "REMOVE LOOP AUTOMATION" IS TRUE. If true, removes dash panels from most levels.</HelpText>
+        <HelpText>HIGHLY RECOMMENDED WHEN "LOOP AUTOMATION TYPE" IS NOT "VANILLA". If true, removes dash panels from most levels.</HelpText>
       </Property>
 	  <Property name="TweakCameras" type="bool" defaultvalue="False" display="Enable Camera Tweaks">
         <HelpText>HIGHLY RECOMMENDED WHEN "REMOVE LOOP AUTOMATION" IS TRUE. Enabling this will cause levels to use tweaked cameras that lessen disorientation when running through loops.</HelpText>
+      </Property>
+	  <Property name="MechanicsTweaks" type="bool" defaultvalue="True" display="Enable Mechanics Tweaks">
+        <HelpText>Enables SonicFreak94's Mechanics Tweaks mod changes, which changes how things like enemy bouncing, jumping, springs, and spindashing work.</HelpText>
       </Property>
     </Group>
 	<Group name="Levels" display="- Levels">
@@ -122,6 +125,9 @@
 	  <Property name="SonicSRD" display="Sonic Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
 		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
 	  </Property>
+	  <Property name="SonicJC" display="Sonic Jump-Height Constant" type="float" defaultvalue="20.75">
+		<HelpText>Per-player based jump-height multiplier. Don't mess with this too much.</HelpText>
+	  </Property>
 	  <Property name="Tails Rolling Deceleration" type="float" defaultvalue="-0.004">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
       </Property>
@@ -154,6 +160,9 @@
 	  </Property>
 	  <Property name="TailsSRD" display="Tails Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
 		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
+	  </Property>
+	  <Property name="TailsJC" display="Tails Jump-Height Constant" type="float" defaultvalue="20.75">
+		<HelpText>Per-player based jump-height multiplier. Don't mess with this too much.</HelpText>
 	  </Property>
 	  <Property name="Knuckles Rolling Deceleration" type="float" defaultvalue="-0.008">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
@@ -188,6 +197,9 @@
 	  <Property name="KnucklesSRD" display="Knuckles Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
 		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
 	  </Property>
+	  <Property name="KnucklesJC" display="Knuckles Jump-Height Constant" type="float" defaultvalue="20.75">
+		<HelpText>Per-player based jump-height multiplier. Don't mess with this too much.</HelpText>
+	  </Property>
 	  <Property name="Amy Rolling Deceleration (Unused)" type="float" defaultvalue="-0.008">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
       </Property>
@@ -220,6 +232,9 @@
 	  </Property>
 	  <Property name="AmySRD" display="Amy Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
 		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
+	  </Property>
+	  <Property name="AmyJC" display="Amy Jump-Height Constant" type="float" defaultvalue="21.0">
+		<HelpText>Per-player based jump-height multiplier. Don't mess with this too much.</HelpText>
 	  </Property>
 	  <Property name="Gamma Rolling Deceleration (Unused)" type="float" defaultvalue="-0.008">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
@@ -254,6 +269,9 @@
 	  <Property name="GammaSRD" display="Gamma Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
 		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
 	  </Property>
+	  <Property name="GammaJC" display="Gamma Jump-Height Constant" type="float" defaultvalue="21.0">
+		<HelpText>Per-player based jump-height multiplier. Don't mess with this too much.</HelpText>
+	  </Property>
 	  <Property name="Big Rolling Deceleration (Unused)" type="float" defaultvalue="-0.008">
         <HelpText>The amount of deceleration when rolling on flat ground.</HelpText>
       </Property>
@@ -287,12 +305,20 @@
 	  <Property name="BigSRD" display="Big Downwards Rolling Slope Factor" type="float" defaultvalue="0.3125">
 		<HelpText>(Rotation-based)The amount of slope influence while rolling downwards.</HelpText>
 	  </Property>
+	  <Property name="BigJC" display="Big Jump-Height Constant" type="float" defaultvalue="21.0">
+		<HelpText>Per-player based jump-height multiplier. Don't mess with this too much.</HelpText>
+	  </Property>
     </Group>
   </Groups>
   <Enums>
 	<Enum name="Physics Type">
 		<EnumMember name="0" display="Rotation-based" />
 		<EnumMember name="1" display="Velocity-based" />
+	</Enum>
+	<Enum name="LoopType">
+		<EnumMember name="0" display="Vanilla" />
+		<EnumMember name="1" display="No Splines" />
+		<EnumMember name="2" display="Boost-less Splines" />
 	</Enum>
   </Enums>
 </ConfigSchema>

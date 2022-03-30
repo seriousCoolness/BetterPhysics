@@ -35,20 +35,46 @@ static BOOL __stdcall Sonic_ChargeSpindash_original(CharObj2* data2, EntityData1
 
 static BOOL __stdcall Sonic_ChargeSpindash_(CharObj2* data2, EntityData1* data1)
 {
+	if (!MechanicsTweaks) 
+	{
+		double v3; // st7
+
+		if ((AttackButtons & Controllers[data1->CharIndex].PressedButtons) == 0)
+		{
+			return 0;
+		}
+		data1->Action = 4;
+		Sonic_Spin(data2);
+		data1->Status |= Status_Attack | Status_Ball;
+		v3 = data2->Speed.x;
+		data2->SonicSpinTimer = 0;
+		if (v3 <= 2.0)
+		{
+			data2->SpindashSpeed = 2.0;             // 2.0
+		}
+		else
+		{
+			data2->SpindashSpeed = data2->Speed.x;
+		}
+		QueueSound_DualEntity(767, data1, 1, 0, 2);
+		return 1;
+	}
+
+	else {
 	auto controller = &Controllers[data1->CharIndex];
 
 	// Change AttackButtons here to Buttons_X to allow vanilla behavior with the B button
-	if (controller->PressedButtons & AttackButtons && (abs(njScalor(&data2->Speed)) >= PhysicsArray[data1->CharID].RollEnd || (abs(data2->SurfaceNormal.y) != 1.0f && controller->HeldButtons & AttackButtons && !(controller->PressedButtons & AttackButtons))))
+	if (controller->PressedButtons & Buttons_X && (abs(njScalor(&data2->Speed)) >= PhysicsArray[data1->CharID].RollEnd || (abs(data2->SurfaceNormal.y) != 1.0f && controller->HeldButtons & AttackButtons && !(controller->PressedButtons & AttackButtons))))
 	{
 		int last_held = controller->HeldButtons;
-		controller->HeldButtons &= ~AttackButtons;
+		controller->HeldButtons &= ~Buttons_X;
 
-		data1->Status              |= Status_Attack | Status_Ball;
-		data1->Action               = 5;
+		data1->Status |= Status_Attack | Status_Ball;
+		data1->Action = 5;
 		data2->AnimationThing.Index = 15; // ???
-		data2->SpindashSpeed        = data2->Speed.x;
-		data2->LightdashTime        = 0;
-		data2->LightdashTimer       = 0;
+		data2->SpindashSpeed = data2->Speed.x;
+		data2->LightdashTime = 0;
+		data2->LightdashTimer = 0;
 		data2->SonicSpinTimer = 0;
 
 		BOOL result = Sonic_ReleaseSpindash(data1, data2);
@@ -58,6 +84,7 @@ static BOOL __stdcall Sonic_ChargeSpindash_(CharObj2* data2, EntityData1* data1)
 	}
 
 	return Sonic_ChargeSpindash_original(data2, data1);
+	}
 }
 
 void ClassicRoll_OnFrame()

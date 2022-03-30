@@ -7,6 +7,8 @@
 #include "ClassicRoll.h"
 #include "FixGomban.h"
 #include "Turning.h"
+#include "HandleGroundVelocity.h"
+//#include "AnalogDirection.h"
 // or #include "stdafx.h" for previous Visual Studio versions
 
 PointerInfo jumps[] = {
@@ -15,9 +17,9 @@ PointerInfo jumps[] = {
 	ptrdecl(EnemyBounceThing_ptr, EnemyBounceThing_r),
 	ptrdecl(DoJumpThing, DoJumpThing_r),
 	ptrdecl(sub_446ED0, FixGomban_r),
-	ptrdecl(sub_4491E0, GraduallyTurn_r)
+	ptrdecl(sub_4491E0, GraduallyTurn_r),
+	ptrdecl(sub_44BB60_ptr, sub_44BB60_r)
 };
-
 static const int jump_cancel = Buttons_B;
 
 namespace CollisionList
@@ -119,9 +121,10 @@ extern "C"
 	float JumpHeavyness = 0.01f;
 	float AirDeceleration = -0.019f;
 	float AirControl = -0.028f;
-	bool DeleteLoops = false;
+	int DeleteLoops = 0;
 	bool DeleteDashPanels = true;
 	bool TweakCameras = false;
+	bool MechanicsTweaks = true;
 
 	bool ApplyPhysicsFor[8] = { 1 };
 
@@ -146,13 +149,16 @@ extern "C"
 	float InitialAirAccel[8] = { 0.031 };
 	float InitialAirDecel[8] = { -0.028 };
 	float InitialAirBrake[8] = { -0.17 };
+	float JumpConstant[8] = { 20.75f };
 
 	int InitialLoopInstruction;
+	int InitialLoopInstruction2;
 	int InitialPanelInstruction;
 
 	int DebugSelect = 0;
 
 	bool PrevOnGround = false;
+	bool PrevOnGround2 = false;
 
 	__declspec(dllexport) PointerList Jumps[] = { { arrayptrandlengthT(jumps, int) } };
 
@@ -169,9 +175,10 @@ extern "C"
 		JumpHeavyness = config->getFloat("General", "JumpHeavyness", 0.02f);
 		AirDeceleration = config->getFloat("General", "AirDeceleration", -0.019f);
 		AirControl = config->getFloat("General", "AirControl", -0.028f);
-		DeleteLoops = config->getBool("General", "DeleteLoops", false);
+		DeleteLoops = config->getInt("General", "DeleteLoops", 0);
 		DeleteDashPanels = config->getBool("General", "DeleteDashPanels", true);
 		TweakCameras = config->getBool("General", "TweakCameras", false);
+		MechanicsTweaks = config->getBool("General", "MechanicsTweaks", true);
 
 		ApplyPhysicsFor[0] = config->getBool("Physics", "Sonic", true);
 		ApplyPhysicsFor[2] = config->getBool("Physics", "Tails", true);
@@ -203,6 +210,7 @@ extern "C"
 		SlopeFactor[0] = config->getFloat("Advanced", "SonicSF", 0.080f);
 		SlopeRollUp[0] = config->getFloat("Advanced", "SonicSRU", 0.058125f);
 		SlopeRollDown[0] = config->getFloat("Advanced", "SonicSRD", 0.3125f);
+		JumpConstant[0] = config->getFloat("Advanced", "SonicJC", 20.75f);
 
 		RollingDecel[2] = config->getFloat("Advanced", "Tails Rolling Deceleration", -0.004f);
 		RollingSlopeInfluenceMax[2] = config->getFloat("Advanced", "Tails Max Roll Slope Influence", 0.16f);
@@ -215,7 +223,8 @@ extern "C"
 		SlopeFactor[2] = config->getFloat("Advanced", "TailsSF", 0.080f);
 		SlopeRollUp[2] = config->getFloat("Advanced", "TailsSRU", 0.058125f);
 		SlopeRollDown[2] = config->getFloat("Advanced", "TailsSRD", 0.3125f);
-		
+		JumpConstant[2] = config->getFloat("Advanced", "TailsJC", 20.75f);
+
 		RollingDecel[3] = config->getFloat("Advanced", "Knuckles Rolling Deceleration", -0.008f);
 		RollingSlopeInfluenceMax[3] = config->getFloat("Advanced", "Knuckles Max Roll Slope Influence", 0.16f);
 		RollingSlopeInfluenceMin[3] = config->getFloat("Advanced", "Knuckles Min Roll Slope Influence", 0.04f);
@@ -227,7 +236,8 @@ extern "C"
 		SlopeFactor[3] = config->getFloat("Advanced", "KnucklesSF", 0.080f);
 		SlopeRollUp[3] = config->getFloat("Advanced", "KnucklesSRU", 0.058125f);
 		SlopeRollDown[3] = config->getFloat("Advanced", "KnucklesSRD", 0.3125f);
-		
+		JumpConstant[3] = config->getFloat("Advanced", "KnucklesJC", 20.75f);
+
 		RollingDecel[5] = config->getFloat("Advanced", "Amy Rolling Deceleration (Unused)", -0.008f);
 		RollingSlopeInfluenceMax[5] = config->getFloat("Advanced", "Amy Max Roll Slope Influence (Unused)", 0.32f);
 		RollingSlopeInfluenceMin[5] = config->getFloat("Advanced", "Amy Min Roll Slope Influence (Unused)", 0.04f);
@@ -239,6 +249,7 @@ extern "C"
 		SlopeFactor[5] = config->getFloat("Advanced", "AmySF", 0.038125f);
 		SlopeRollUp[5] = config->getFloat("Advanced", "AmySRU", 0.058125f);
 		SlopeRollDown[5] = config->getFloat("Advanced", "AmySRD", 0.3125f);
+		JumpConstant[5] = config->getFloat("Advanced", "AmyJC", 21.0f);
 
 		RollingDecel[6] = config->getFloat("Advanced", "Gamma Rolling Deceleration (Unused)", -0.008f);
 		RollingSlopeInfluenceMax[6] = config->getFloat("Advanced", "Gamma Max Roll Slope Influence (Unused)", 0.32f);
@@ -251,6 +262,7 @@ extern "C"
 		SlopeFactor[6] = config->getFloat("Advanced", "GammaSF", 0.038125f);
 		SlopeRollUp[6] = config->getFloat("Advanced", "GammaSRU", 0.058125f);
 		SlopeRollDown[6] = config->getFloat("Advanced", "GammaSRD", 0.3125f);
+		JumpConstant[6] = config->getFloat("Advanced", "GammaJC", 21.0f);
 
 		RollingDecel[7] = config->getFloat("Advanced", "Big Rolling Deceleration (Unused)", -0.008f);
 		RollingSlopeInfluenceMax[7] = config->getFloat("Advanced", "Big Max Roll Slope Influence (Unused)", 0.32f);
@@ -263,6 +275,7 @@ extern "C"
 		SlopeFactor[7] = config->getFloat("Advanced", "BigSF", 0.038125f);
 		SlopeRollUp[7] = config->getFloat("Advanced", "BigSRU", 0.058125f);
 		SlopeRollDown[7] = config->getFloat("Advanced", "BigSRD", 0.3125f);
+		JumpConstant[7] = config->getFloat("Advanced", "BigJC", 21.0f);
 
 
 		if (ApplyPhysicsFor[0])
@@ -274,7 +287,7 @@ extern "C"
 			}
 
 			PhysicsArray[Characters_Sonic].RollDecel = RollingDecel[0];
-			PhysicsArray[Characters_Sonic].RollEnd = 0.90f;
+			PhysicsArray[Characters_Sonic].RollEnd = 0.50f;
 			PhysicsArray[Characters_Sonic].GroundDecel = -0.028;
 		}
 		if (ApplyPhysicsFor[2])
@@ -286,7 +299,7 @@ extern "C"
 			}
 			PhysicsArray[Characters_Tails].FloorGrip = 2;
 			PhysicsArray[Characters_Tails].RollDecel = RollingDecel[2];
-			PhysicsArray[Characters_Tails].RollEnd = 0.90f;
+			PhysicsArray[Characters_Tails].RollEnd = 0.50f;
 		}
 		if (ApplyPhysicsFor[3])
 		{
@@ -296,7 +309,7 @@ extern "C"
 				PhysicsArray[Characters_Knuckles].MaxAccel = 3.0f;
 			}
 			PhysicsArray[Characters_Knuckles].RollDecel = RollingDecel[3];
-			PhysicsArray[Characters_Knuckles].RollEnd = 0.90f;
+			PhysicsArray[Characters_Knuckles].RollEnd = 0.50f;
 		}
 		if (ApplyPhysicsFor[5])
 		{
@@ -305,16 +318,16 @@ extern "C"
 				PhysicsArray[Characters_Amy].VSpeedCap = 24.0f;
 				PhysicsArray[Characters_Amy].MaxAccel = 3.0f;
 			}
-			PhysicsArray[Characters_Amy].FloorGrip = 2;
-			PhysicsArray[Characters_Amy].RollDecel = RollingDecel[5];
-			PhysicsArray[Characters_Amy].RollEnd = 0.90f;
 		}
 
-		//WriteData<5>((void*)0x449364, 0x90);
-		//WriteData<5>((void*)0x44934B, 0x90);
+		//fixes bug that makes tails' inertia not be preserved when running or rolling off of a ramp or sloped ledge.
+		WriteData<3>((void*)0x45E970, 0x90);
 
-		WriteData((const int**)0x00492F56, &jump_cancel);
-		WriteData((short*)0x00497476, (short)0xE990);
+		if (MechanicsTweaks) 
+		{
+			WriteData((const int**)0x00492F56, &jump_cancel);
+			WriteData((short*)0x00497476, (short)0xE990);
+		}
 
 		for (int i = 0; i < 8; i++)
 		{
@@ -332,10 +345,14 @@ extern "C"
 
 		Init_Levels(LevelTweaks, helperFunctions);
 
-		if (DeleteLoops) 
+		if (DeleteLoops == 1) 
 		{
 			InitialLoopInstruction = *(char*)0x4BB1F0;
 			InitialPanelInstruction = *(char*)0x007A4450;
+		}
+		//Makes loop splines not automatically set you to max speed.
+		if (DeleteLoops == 2) {
+			InitialLoopInstruction2 = *(char*)0x43C160;
 		}
 
 		if (TweakCameras)
@@ -360,17 +377,21 @@ extern "C"
 		SlopeRollDown[6] = SlopeRollDown[6] * 0.92f;
 		SlopeFactor[7] = SlopeFactor[7] * 0.92f;
 		SlopeRollUp[7] = SlopeRollUp[7] * 0.92f;
-		SlopeRollDown[7] = SlopeRollDown[7] * 0.92f;
-		
+		SlopeRollDown[7] = SlopeRollDown[7] * 0.92f;		
 	}
 
 	__declspec(dllexport) void __cdecl OnFrame()
 	{
 		// Executed before the game processes input
 		// Executed every running frame of SADX
-		if (DeleteLoops) {
+		if (DeleteLoops == 1) {
 			WriteData<1>((char*)0x4BB1F0, InitialLoopInstruction);
-			Delete_Splines(LevelTweaks);
+			Delete_Splines(LevelTweaks, 1);
+		}
+		if (DeleteLoops == 2) {
+			WriteData<3>((void*)0x43C160, InitialLoopInstruction2);
+			Delete_Splines(LevelTweaks, 2);
+			//WriteData<4>((void*)0x43C2B3, 0x90);
 		}
 		if (DeleteDashPanels) {
 			WriteData<1>((char*)0x007A4450, InitialPanelInstruction);
@@ -380,12 +401,12 @@ extern "C"
 		EntityData1* data1 = EntityData1Ptrs[0];
 		EntityData2* data2 = EntityData2Ptrs[0];
 
-		if (data1 == nullptr) {
+		/*if (data1 == nullptr) {
 			DisplayDebugString(NJM_LOCATION(2, 2), "As of version 1.9, the Mechanics Tweaks mod has been merged with Better Physics.");
 			DisplayDebugString(NJM_LOCATION(2, 3), "If you still have it installed, please quit the game and disable it now.");
-		}
+		}*/
 
-		if (data1 != nullptr && ApplyPhysicsFor[data1->CharID] && data1->Status != StatusBits_DisableControl)
+		if (data1 != nullptr && ApplyPhysicsFor[data1->CharID])
 		{
 
 			NJS_VECTOR ForwardDirection = { 1, 0, 0 };
@@ -394,46 +415,89 @@ extern "C"
 			PlayerDirectionTransform(data1, &ForwardDirection);
 			PlayerDirectionTransform(data1, &SideDirection);
 
-			bool on_ground = (data1->Action >= 1 && data1->Action <= 5);
-			bool apply_air_tweaks = !((data1->Action >= 10 && data1->Action <= 12) || (data1->CharID == Characters_Tails && data1->Action == 15) || data1->Status == 16385);
+			bool on_ground = data1->Status & Status_Ground;
+			bool apply_air_tweaks = GetAirTweaks(data1);
+			
+			//bool apply_air_tweaks = false;
+			
+			//if (data1->CharID == Characters_Sonic) {
+			//	apply_air_tweaks = !((data1->Action >= 10 && data1->Action <= 12) || data1->Status == 16385);
+			//}
 
 			// && abs(Controllers[0].LeftStickX) < 20 && abs(Controllers[0].LeftStickY) < 20
-			if (on_ground && !PrevOnGround) {
-				if (data2->VelocityDirection.y < 0 && data2->CharacterData->SurfaceNormal.y <= 0.925f) {
-					//GravityAngle_X = 0;
-					//GravityAngle_Z = 0;
+			if (data1->Status & Status_Ground && !PrevOnGround) {
+				if (data2->VelocityDirection.y < 0 && (Controllers[data1->CharIndex].HeldButtons & AttackButtons) && abs(data2->CharacterData->SurfaceNormal.y) <= 0.925f) {
+					
+					/*float SurfaceAngleY = atan2(data2->CharacterData->SurfaceNormal.z, data2->CharacterData->SurfaceNormal.x) * (65536.0f / (2.0f * 3.141592f));
+					float VelocityAngleY = atan2(-data2->VelocityDirection.z, -data2->VelocityDirection.x) * (65536.0f / (2.0f * 3.141592f));
+					
+					if (VelocityAngleY < SurfaceAngleY && SurfaceAngleY > VelocityAngleY + 32768.0f)
+						SurfaceAngleY -= 65536.0f;
+					else if (VelocityAngleY > SurfaceAngleY && VelocityAngleY > SurfaceAngleY + 32768.0f)
+						VelocityAngleY -= 65536.0f;
 
-					NJS_VECTOR NormalVelDotProduct = { 0,0,0 };
-					NJS_VECTOR NormalSquared = { 0,0,0 };
-					DotProduct(&data2->CharacterData->SurfaceNormal, &data2->VelocityDirection, &NormalVelDotProduct);
-					DotProduct(&data2->CharacterData->SurfaceNormal, &data2->CharacterData->SurfaceNormal, &NormalSquared);
-					NJS_VECTOR Reflected_Normal = { 0,0,0 };
+					float InbetweenAngleY = SurfaceAngleY + ((SurfaceAngleY - VelocityAngleY) / (1.0f + (data2->CharacterData->Speed.x / PhysicsArray[data1->CharID].Run1)));
 					
-					if (data2->CharacterData->SurfaceNormal.x != 0.0f && data2->CharacterData->SurfaceNormal.x != -0.0f)
-						Reflected_Normal.x = 2 * ((NormalVelDotProduct.x / NormalSquared.x) * data2->CharacterData->SurfaceNormal.x) - data2->VelocityDirection.x;
-					if (data2->CharacterData->SurfaceNormal.z != 0.0f && data2->CharacterData->SurfaceNormal.z != -0.0f)
-						Reflected_Normal.z = 2 * ((NormalVelDotProduct.z / NormalSquared.z) * data2->CharacterData->SurfaceNormal.z) - data2->VelocityDirection.z;
+					if (sgn(data2->CharacterData->SurfaceNormal.z) != sgn(-data2->VelocityDirection.z) && sgn(data2->CharacterData->SurfaceNormal.x) != sgn(-data2->VelocityDirection.x))
+					{
+						data1->Rotation.y = InbetweenAngleY;
+						float HorizSpeed = sqrt(pow(data2->VelocityDirection.x, 2) + pow(data2->VelocityDirection.z, 2));
+						data2->CharacterData->Speed.x = sqrt(pow(data2->VelocityDirection.y, 2) + pow(HorizSpeed, 2));
+					}
 
-					
-					float SurfaceAngleY = atan2(Reflected_Normal.z, Reflected_Normal.x);
-					data1->Rotation.y = (SurfaceAngleY) * (65536.0f / (2.0f * 3.141592f));
-					data2->Forward.y = data1->Rotation.y;
-					
-					PlayerDirectionTransform(data1, &ForwardDirection);
+					if (sgn(data2->CharacterData->SurfaceNormal.z) == sgn(-data2->VelocityDirection.z) && sgn(data2->CharacterData->SurfaceNormal.x) == sgn(-data2->VelocityDirection.x))
+					{
+						data1->Rotation.y = VelocityAngleY;
+						float HorizSpeed = sqrt(pow(data2->CharacterData->SurfaceNormal.x, 2) + pow(data2->CharacterData->SurfaceNormal.z, 2));
+						data2->CharacterData->Speed.x = sqrt(pow(data2->VelocityDirection.y, 2) + pow(HorizSpeed, 2));
+					}*/
 
-					data2->CharacterData->Speed.x = abs(data2->CharacterData->Speed.x) - (ForwardDirection.y * SlopeFactor[data1->CharID]);
+					NJS_VECTOR MergedSlopeVector = {data2->VelocityDirection.x, data2->VelocityDirection.y, data2->VelocityDirection.z};
 					
+					if(sgn(data2->VelocityDirection.x) == sgn(data2->CharacterData->SurfaceNormal.x))
+						MergedSlopeVector.x += data2->CharacterData->SurfaceNormal.x * (1.0f + SlopeRollDown[data1->CharID]);
+					else
+						MergedSlopeVector.x += data2->CharacterData->SurfaceNormal.x * (1.0f + SlopeRollUp[data1->CharID]);
+					
+					if (sgn(data2->VelocityDirection.y) == sgn(data2->CharacterData->SurfaceNormal.y))
+						MergedSlopeVector.y += data2->CharacterData->SurfaceNormal.y * (1.0f + SlopeRollDown[data1->CharID]);
+					else
+						MergedSlopeVector.y += data2->CharacterData->SurfaceNormal.y * (1.0f + SlopeRollUp[data1->CharID]);
+					
+					if (sgn(data2->VelocityDirection.z) == sgn(data2->CharacterData->SurfaceNormal.z))
+						MergedSlopeVector.z += data2->CharacterData->SurfaceNormal.z * (1.0f + SlopeRollDown[data1->CharID]);
+					else
+						MergedSlopeVector.z += data2->CharacterData->SurfaceNormal.z * (1.0f + SlopeRollUp[data1->CharID]);
+					
+					float SurfaceAngleY = atan2(MergedSlopeVector.z, MergedSlopeVector.x) * (65536.0f / (2.0f * 3.141592f));
+
+					data1->Rotation.y = SurfaceAngleY;
+					float HorizSpeed = sqrt(pow(MergedSlopeVector.x, 2) + pow(MergedSlopeVector.z, 2));
+					data2->CharacterData->Speed.x = sqrt(pow(MergedSlopeVector.y, 2) + pow(HorizSpeed, 2));
 				}
-
 			}
-			PrevOnGround = on_ground;
+			PrevOnGround2 = PrevOnGround;
+			PrevOnGround = data1->Status & Status_Ground;
 
 
 
 			if (ShowDebugInfo)
 			{
-				DisplayDebugString(NJM_LOCATION(20, 4), "Status:");
-				PrintDebugNumber(NJM_LOCATION(30, 4), data1->Status, 2);
+				DisplayDebugString(NJM_LOCATION(20, 4), "Status_Ball:");
+				if(data1->Status & Status_Ball)
+					DisplayDebugString(NJM_LOCATION(35, 4), "True");
+				else
+					DisplayDebugString(NJM_LOCATION(35, 4), "False");
+				DisplayDebugString(NJM_LOCATION(20, 5), "Status_Ground:");
+				if (data1->Status & Status_Ground)
+					DisplayDebugString(NJM_LOCATION(35, 5), "True");
+				else
+					DisplayDebugString(NJM_LOCATION(35, 5), "False");
+				DisplayDebugString(NJM_LOCATION(20, 6), "Status_Attack:");
+				if (data1->Status & Status_Attack)
+					DisplayDebugString(NJM_LOCATION(35, 6), "True");
+				else
+					DisplayDebugString(NJM_LOCATION(35, 6), "False");
 
 				if (apply_air_tweaks)
 					DisplayDebugString(NJM_LOCATION(20, 2), "Apply_air_tweaks: true");
@@ -443,23 +507,21 @@ extern "C"
 				PrintDebugNumber(NJM_LOCATION(28, 3), data1->CharID, 2);
 			}
 
-
-			if (apply_air_tweaks)
-			{
-				PhysicsArray[data1->CharID].JumpSpeed = InitialJumpSpeed[data1->CharID] + (JumpHeavyness * 20.75f);
-				PhysicsArray[data1->CharID].AirDecel = AirDeceleration;
-				PhysicsArray[data1->CharID].AirBrake = AirControl;
-				PhysicsArray[data1->CharID].AirAccel = 0.028;
-			}
-			else
-			{
-				PhysicsArray[data1->CharID].Gravity = 0.08f;
-				PhysicsArray[data1->CharID].JumpSpeed = InitialJumpSpeed[data1->CharID];
-				PhysicsArray[data1->CharID].AirDecel = InitialAirDecel[data1->CharID];
-				PhysicsArray[data1->CharID].AirBrake = InitialAirBrake[data1->CharID];
-				PhysicsArray[data1->CharID].AirAccel = InitialAirAccel[data1->CharID];
-			}
-
+				if (apply_air_tweaks)
+				{
+					PhysicsArray[data1->CharID].JumpSpeed = InitialJumpSpeed[data1->CharID] + (JumpHeavyness * JumpConstant[data1->CharID]);
+					PhysicsArray[data1->CharID].AirDecel = AirDeceleration;
+					PhysicsArray[data1->CharID].AirBrake = AirControl;
+					PhysicsArray[data1->CharID].AirAccel = 0.028;
+				}
+				else
+				{
+					PhysicsArray[data1->CharID].Gravity = 0.08f;
+					PhysicsArray[data1->CharID].JumpSpeed = InitialJumpSpeed[data1->CharID];
+					PhysicsArray[data1->CharID].AirDecel = InitialAirDecel[data1->CharID];
+					PhysicsArray[data1->CharID].AirBrake = InitialAirBrake[data1->CharID];
+					PhysicsArray[data1->CharID].AirAccel = InitialAirAccel[data1->CharID];
+				}
 
 			if (on_ground) {
 
@@ -468,7 +530,7 @@ extern "C"
 					DisplayDebugString(NJM_LOCATION(2, 2), "On_ground: true");
 
 				}
-				if (data1->Action == 4 || data1->Action == 5) {
+				if (data1->Status & Status_Ball) {
 					if (PhysicsType == 1) {
 						if (data2->VelocityDirection.y > 0)
 							PhysicsArray[data1->CharID].Gravity = (RollingSlopeOffset[data1->CharID] - 0.02f) - (data2->VelocityDirection.y / SlopeOffsetDivisor[data1->CharID]);
@@ -484,7 +546,7 @@ extern "C"
 					}
 					if (PhysicsType == 0) {
 						PhysicsArray[data1->CharID].Gravity = 0.0f;
-						data2->CharacterData->Speed.y -= 0.001f;
+						data2->CharacterData->Speed.y -= 0.001;
 
 						if (data2->VelocityDirection.y > 0.0f)
 						{
@@ -534,10 +596,21 @@ extern "C"
 					DisplayDebugString(NJM_LOCATION(2, 2), "On_ground: false");
 
 				if (!apply_air_tweaks)
-					PhysicsArray[data1->CharID].Gravity = 0.08f;
-				else
-					PhysicsArray[data1->CharID].Gravity = 0.08f + JumpHeavyness;
+				{
 
+					PhysicsArray[data1->CharID].Gravity = 0.08f;
+					PhysicsArray[data1->CharID].JumpSpeed = InitialJumpSpeed[data1->CharID];
+					PhysicsArray[data1->CharID].AirDecel = InitialAirDecel[data1->CharID];
+					PhysicsArray[data1->CharID].AirBrake = InitialAirBrake[data1->CharID];
+					PhysicsArray[data1->CharID].AirAccel = InitialAirAccel[data1->CharID];
+				}
+				else
+				{
+					if (data1->CharID == Characters_Amy)
+						PhysicsArray[data1->CharID].Gravity = 0.08f + (JumpHeavyness * (1.0f / JumpConstant[data1->CharID]));
+					else
+						PhysicsArray[data1->CharID].Gravity = 0.08f + JumpHeavyness;
+				}
 			}
 
 
@@ -553,23 +626,28 @@ extern "C"
 				PlayerDirectionTransform(data1, &ForwardDirection);
 				PlayerDirectionTransform(data1, &SideDirection);
 
-				DisplayDebugString(NJM_LOCATION(2, 10), "roll down div: ");
+				DisplayDebugString(NJM_LOCATION(2, 10), "Forward Direction x: ");
 				char arrayX[16];
-				sprintf_s(arrayX, "%f", (45.0f - abs(SideDirection.y * 45) * SlopeRollDown[data1->CharID]));
+				sprintf_s(arrayX, "%f", data2->VelocityDirection.x);
 				DisplayDebugString(NJM_LOCATION(20, 10), arrayX);
 
-				DisplayDebugString(NJM_LOCATION(2, 11), "roll up div: ");
+				DisplayDebugString(NJM_LOCATION(2, 11), "Forward Direction y: ");
 				char arrayY[16];
-				sprintf_s(arrayY, "%f", (45.0f - abs(SideDirection.y * 45) * SlopeRollUp[data1->CharID]));
+				sprintf_s(arrayY, "%f", data2->VelocityDirection.y);
 				DisplayDebugString(NJM_LOCATION(20, 11), arrayY);
 
-				DisplayDebugString(NJM_LOCATION(2, 12), "run div: ");
+				DisplayDebugString(NJM_LOCATION(2, 12), "Forward Direction z: ");
 				char arrayZ[16];
-				sprintf_s(arrayZ, "%f", (45.0f - abs(SideDirection.y * 45) * SlopeFactor[data1->CharID]));
+				sprintf_s(arrayZ, "%f", data2->VelocityDirection.z);
 				DisplayDebugString(NJM_LOCATION(20, 12), arrayZ);
 
-
 				if (data2->CharacterData != nullptr) {
+					DisplayDebugString(NJM_LOCATION(30, 15), "Surf flag 4000: ");
+					
+					const char *arrayflag = toBinary(data2->CharacterData->SurfaceFlags).c_str();
+					DisplayDebugString(NJM_LOCATION(55, 15), arrayflag);
+					PrintDebugNumber(NJM_LOCATION(55, 16), data2->CharacterData->SurfaceFlags & 0x4000, 10);
+
 					DisplayDebugString(NJM_LOCATION(2, 14), "Surface x: ");
 					char arraySX[16];
 					sprintf_s(arraySX, "%f", data2->CharacterData->SurfaceNormal.x);
@@ -582,7 +660,10 @@ extern "C"
 					char arraySZ[16];
 					sprintf_s(arraySZ, "%f", data2->CharacterData->SurfaceNormal.z);
 					DisplayDebugString(NJM_LOCATION(20, 16), arraySZ);
+					DisplayDebugString(NJM_LOCATION(2, 17), "Action: ");
+					PrintDebugNumber(NJM_LOCATION(20, 17), data1->Action, 2);
 				}
+
 
 				if (Controllers[0].PressedButtons & Buttons_L) {
 					if (PhysicsType == 0)
@@ -596,7 +677,12 @@ extern "C"
 					DisplayDebugString(NJM_LOCATION(30, 19), "Physics Type: Velocity");
 
 
-				if ((Controllers[0].PressedButtons & Buttons_Up) && DebugSelect < 14) {
+				if(data2 != NULL && data2->CharacterData != NULL && (data2->CharacterData->SurfaceFlags & 0x20000) != 0)
+					DisplayDebugString(NJM_LOCATION(30, 20), "Surface Flag: true");
+				if(data2 != NULL && data2->CharacterData != NULL && (data2->CharacterData->SurfaceFlags & 0x20000) == 0)
+					DisplayDebugString(NJM_LOCATION(30, 20), "Surface Flag: false");
+
+				if ((Controllers[0].PressedButtons & Buttons_Up) && DebugSelect < 15) {
 					DebugSelect += 1;
 				}
 				if ((Controllers[0].PressedButtons & Buttons_Down) && DebugSelect > 0) {
@@ -634,6 +720,8 @@ extern "C"
 						data1->Position.x += 0.1f;
 					if (DebugSelect == 14)
 						data1->Position.z += 0.1f;
+					if (DebugSelect == 15)
+						JumpConstant[data1->CharID] += 0.1f;
 				}
 				if (Controllers[0].HeldButtons & Buttons_Left) {
 					if (DebugSelect == 0)
@@ -666,6 +754,8 @@ extern "C"
 						data1->Position.x -= 0.1f;
 					if (DebugSelect == 14)
 						data1->Position.z -= 0.1f;
+					if (DebugSelect == 15)
+						JumpConstant[data1->CharID] -= 0.1f;
 				}
 
 				char arrayDEBUG[16];
@@ -760,9 +850,47 @@ extern "C"
 					sprintf_s(arrayDEBUG, "%f", data1->Position.z);
 					DisplayDebugString(NJM_LOCATION(45, 14), arrayDEBUG);
 				}
+				if (DebugSelect == 15) {
+					DisplayDebugString(NJM_LOCATION(30, 14), "Jump Constant:");
+
+					sprintf_s(arrayDEBUG, "%f", JumpConstant[data1->CharID]);
+					DisplayDebugString(NJM_LOCATION(45, 14), arrayDEBUG);
+				}
 			}
 		}
-		ClassicRoll_OnFrame();
+		if (MechanicsTweaks)
+		{
+			ClassicRoll_OnFrame();
+		}
+	}
+
+	bool GetAirTweaks(EntityData1* data1) 
+	{
+		bool return_airTweaks = false;
+
+		switch (data1->CharID)
+		{
+			case Characters_Sonic:
+				return_airTweaks = !((data1->Action >= 10 && data1->Action <= 12) || data1->Status == 16385);
+				break;
+			case Characters_Tails:
+				return_airTweaks = !((data1->Action >= 10 && data1->Action <= 12) || data1->Action == 15 || data1->Status == 16385);
+				break;
+			case Characters_Knuckles:
+				return_airTweaks = !((data1->Action >= 10 && data1->Action <= 12) || data1->Action == 11 || data1->Status == 16385);
+				break;
+			case Characters_Amy:
+				return_airTweaks = !((data1->Action >= 10 && data1->Action <= 12) || data1->Status == 16385);
+				break;
+			case Characters_Gamma:
+				return_airTweaks = !(data1->Action >= 10 && data1->Action <= 12);
+				break;
+			case Characters_Big:
+				return_airTweaks = !(data1->Action >= 10 && data1->Action <= 12);
+				break;
+		}
+		
+		return return_airTweaks;
 	}
 
 	__declspec(dllexport) void __cdecl OnInput()
